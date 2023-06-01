@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "363356084330",
+    "project_id": "passifyapp-a6032",
+    "storage_bucket": "passifyapp-a6032.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363356084330:android:eadd54f86edc4785965213",
+        "android_client_info": {
+          "package_name": "com.mini.passifyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363356084330-uhdi4smrp734nkg1os9bfknemptfkpes.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkU_b1-_s1QoYlkiTafDkjeBOi3K4n3MQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363356084330-uhdi4smrp734nkg1os9bfknemptfkpes.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
