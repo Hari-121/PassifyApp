@@ -1,13 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:passifyapp/controllers/auth_controller.dart';
 import 'package:passifyapp/register.dart';
 import 'package:passifyapp/home.dart';
 
+import 'Forgot_Password.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
-  @override
   _LoginState createState() => _LoginState();
 }
 
@@ -17,39 +19,44 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade200,
-              Colors.purple.shade50,
-            ],
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue.shade200,
+                  Colors.purple.shade50,
+                ],
+              ),
+            ),
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Image.asset('assets/images/Loginpng.png'),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Image.asset('assets/images/Pattern.png'),
+                ),
+                _header(context),
+                _inputfield(context),
+                _signup(context),
+                _description(context),
+              ],
+            ),
           ),
-        ),
-        child: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topCenter,
-              child: Image.asset('assets/images/image15.png'),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Image.asset('assets/images/bg.png'),
-            ),
-            _header(context),
-            _inputfield(context),
-            _signup(context),
-            _description(context),
-          ],
         ),
       ),
     );
   }
 
-  Widget _header(context) {
+  _header(context) {
     return Column(
       children: const [
         SizedBox(
@@ -65,7 +72,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _inputfield(context) {
+  _inputfield(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -77,11 +84,11 @@ class _LoginState extends State<Login> {
           child: TextField(
             controller: _emailController,
             decoration: InputDecoration(
-              hintText: 'Email',
+              labelText: 'Email',
+              hintText: 'Enter your Email',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
               prefixIcon: const Icon(Icons.person),
@@ -95,11 +102,11 @@ class _LoginState extends State<Login> {
           child: TextField(
             controller: _passwordController,
             decoration: InputDecoration(
+              labelText: 'Password',
               hintText: 'Password',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
               prefixIcon: const Icon(Icons.lock),
@@ -108,7 +115,16 @@ class _LoginState extends State<Login> {
             obscureText: true,
           ),
         ),
-        const SizedBox(height: 40),
+        Padding(
+            padding: const EdgeInsets.only(left: 168),
+            child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Forget_Password()));
+                },
+                child: const Text("Forgot Password ?"))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
@@ -132,12 +148,12 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _signup(context) {
+  _signup(context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(
-          height: 405,
+          height: 585,
         ),
         Row(
           children: [
@@ -148,23 +164,20 @@ class _LoginState extends State<Login> {
               ),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Registration(),
-                  ),
-                );
-              },
-              child: const Text("Register Here."),
-            ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Registration()));
+                },
+                child: const Text("Register Here.")),
           ],
-        ),
+        )
       ],
     );
   }
 
-  Widget _description(context) {
+  _description(context) {
     return Column(
       children: const [
         SizedBox(
@@ -175,7 +188,7 @@ class _LoginState extends State<Login> {
         ),
         Center(
           child: Text('-your all-in-one travel companion"'),
-        ),
+        )
       ],
     );
   }

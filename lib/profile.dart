@@ -1,17 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:passifyapp/buspass.dart';
-
-import 'package:passifyapp/home.dart';
-
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:passifyapp/Logout.dart';
+import 'package:passifyapp/controllers/auth_controller.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import 'Logout.dart';
-import 'controllers/auth_controller.dart';
-import 'controllers/profile_controller.dart';
+import 'Home.dart';
+import 'buspass.dart';
+import 'profileupd.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -20,34 +18,50 @@ class Profile extends StatefulWidget {
   State<Profile> createState() => _ProfileState();
 }
 
-class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
+class _ProfileState extends State<Profile> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String name = '';
+  String avatarUrl = '';
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _deptController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot snapshot =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          name = data['name'] ?? 'Loading..';
+          _nameController.text = name;
+          avatarUrl = data['avatar'] ?? ''; // Get the avatar URL from Firestore
+        });
+        _deptController.text = data['department'] ?? 'Department';
+        _emailController.text = data['email'] ?? '';
+        _mobileController.text = data['mobile'] ?? '';
+      }
+    }
+  }
+
   get changeImageColor => null;
 
   get imageColor => null;
 
-  final _nameController = TextEditingController();
-  final _deptController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _mobileController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    Get.put(ProfileController());
-  }
-
   @override
   Widget build(BuildContext context) {
-    // String? picUrl = AuthController.instance.user!.photoURL;
-    // picUrl = picUrl ?? Constants.dummyAvatar;
-    String? name = AuthController.instance.user!.displayName ?? "Name";
-    String? email = AuthController.instance.user!.email;
-    String? mobile = AuthController.instance.user!.phoneNumber ?? "0000000000";
-    // String dept = AuthController.instance.
-    _mobileController.text = mobile;
-    _nameController.text = name;
-    //  _deptController.text = dept;
-    _emailController.text = email.toString();
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -71,6 +85,25 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               child: Image.asset('assets/images/Register.png'),
             ),
             Positioned(
+              top: 50,
+              right: 40,
+              child: InkWell(
+                onTap: () {
+                  changeImageColor;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Profile_Upd()));
+                },
+                child: Image.asset(
+                  'assets/Icons/edit.png',
+                  color: imageColor,
+                  width: 25,
+                  height: 25,
+                ),
+              ),
+            ),
+            Positioned(
               bottom: 0,
               right: 0,
               child: Image.asset(
@@ -85,14 +118,18 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 70),
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage('assets/images/image1.png'),
+                    backgroundImage: avatarUrl.isNotEmpty
+                        ? NetworkImage(
+                            avatarUrl) // Use the avatar URL from Firestore
+                        : AssetImage('assets/images/image1.png')
+                            as ImageProvider, // Fallback image
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'ANANDU UNNIKRISHNAN',
-                    style: TextStyle(
+                  Text(
+                    name.toUpperCase(),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
@@ -108,169 +145,119 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   const SizedBox(height: 60),
                   Container(
                     width: 300,
-                    height: 250,
+                    height: 220,
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Column(
-                      children: [
-                        Obx(
-                          () {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: TextFormField(
-                                readOnly:
-                                    ProfileController.instance.isEdit.value,
-                                initialValue: name,
-                                style: const TextStyle(color: Colors.white),
-                                decoration: InputDecoration(
-                                  border: const OutlineInputBorder(
-                                      borderSide: BorderSide.none),
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: const Icon(
-                                      Icons.person,
-                                      color: Color.fromARGB(255, 255, 255, 255),
-                                    ),
-                                  ),
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      ProfileController.instance.toggleEdit();
-                                    },
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(4.0),
-                                      child: Icon(
-                                        Icons.edit_outlined,
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                      ),
-                                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.person,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _nameController.text,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                        Obx(
-                          () {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: TextFormField(
-                                readOnly:
-                                    ProfileController.instance.isEdit.value,
-                                controller: _deptController,
-                                //initialValue: '',
-                                style: const TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255)),
-                                decoration: InputDecoration(
-                                  border: const OutlineInputBorder(
-                                      borderSide: BorderSide.none),
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: const Icon(
-                                      Icons.business,
-                                      color: Color.fromARGB(255, 255, 255, 255),
-                                    ),
-                                  ),
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      ProfileController.instance.toggleEdit();
-                                    },
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(4.0),
-                                      child: Icon(
-                                        Icons.edit_outlined,
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: TextFormField(
-                            initialValue: email,
-                            readOnly: true,
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255)),
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: const Icon(
-                                  Icons.email_rounded,
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                ),
-                              ),
-                            ),
+                            ],
                           ),
-                        ),
-                        Obx(
-                          () => Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: TextFormField(
-                              initialValue: mobile,
-                              readOnly: ProfileController.instance.isEdit.value,
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 255, 255, 255)),
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(
-                                    borderSide: BorderSide.none),
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: const Icon(
-                                    Icons.phone_android_outlined,
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                  ),
-                                ),
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    ProfileController.instance.toggleEdit();
-                                  },
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(4.0),
-                                    child: Icon(
-                                      Icons.edit_outlined,
-                                      color: Color.fromARGB(255, 255, 255, 255),
-                                    ),
+                          const SizedBox(height: 30),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.business,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _deptController.text,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 30),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.phone,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _mobileController.text,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 30),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.email_rounded,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _emailController.text,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 30),
                   Column(
                     children: [
                       Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 180, left: 40),
-                            child: InkWell(
-                              onTap: () {
-                                changeImageColor;
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Dashboard()));
-                              },
-                              child: Image.asset(
-                                'assets/Icons/Home.png',
-                                color: imageColor,
-                                width: 28,
-                                height: 28,
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 180, left: 40),
+                              child: InkWell(
+                                onTap: () {
+                                  changeImageColor;
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Dashboard()));
+                                },
+                                child: Image.asset(
+                                  'assets/Icons/Home.png',
+                                  color: imageColor,
+                                  width: 28,
+                                  height: 28,
+                                ),
                               ),
                             ),
                           ),
@@ -324,11 +311,11 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                             padding: const EdgeInsets.only(top: 180, left: 45),
                             child: InkWell(
                               onTap: () {
-                                // changeImageColor;
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) => const Profile()));
+                                changeImageColor;
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Profile()));
                               },
                               child: Image.asset(
                                 'assets/Icons/Avatar.png',
@@ -341,7 +328,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                         ],
                       )
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

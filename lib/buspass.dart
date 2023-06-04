@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/material.dart';
+
+import 'package:passifyapp/Home.dart';
 
 class Buspass extends StatelessWidget {
   const Buspass({Key? key}) : super(key: key);
@@ -228,7 +229,12 @@ class Buspass extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          // Handle the button's onPressed event
+                          Navigator.push(
+                              // Add your navigation code here
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const Dashboard())); // Handle the button's onPressed event
                           // Add your navigation code here
                         },
                         style: ElevatedButton.styleFrom(

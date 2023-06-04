@@ -21,42 +21,45 @@ class _RegistrationState extends State<Registration> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade200,
-              Colors.purple.shade50,
-            ],
-          ),
-        ),
-        child: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topCenter,
-              child: Image.asset('assets/images/Register.png'),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Opacity(
-                opacity: 0.2,
-                child: Image.asset('assets/images/bg.png'),
+    return MaterialApp(
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue.shade200,
+                  Colors.purple.shade50,
+                ],
               ),
             ),
-            _header(context),
-            _inputFields(context),
-            _register(context),
-            _description(context),
-          ],
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Image.asset('assets/images/Register.png'),
+                ),
+                Align(
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: 0.15,
+                      child: Image.asset('assets/images/Pattern.png'),
+                    )),
+                _header(context),
+                _inputfield(context),
+                _login(context),
+                _description(context),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _header(BuildContext context) {
+  _header(context) {
     return Column(
       children: const [
         SizedBox(
@@ -66,10 +69,9 @@ class _RegistrationState extends State<Registration> {
           child: Text(
             "PASSIFY",
             style: TextStyle(
-              fontSize: 45,
-              fontWeight: FontWeight.w900,
-              color: Color.fromARGB(168, 0, 0, 0),
-            ),
+                fontSize: 45,
+                fontWeight: FontWeight.w900,
+                color: Color.fromARGB(168, 0, 0, 0)),
           ),
         ),
         SizedBox(
@@ -80,12 +82,12 @@ class _RegistrationState extends State<Registration> {
             "REGISTER",
             style: TextStyle(fontSize: 23, fontWeight: FontWeight.w900),
           ),
-        ),
+        )
       ],
     );
   }
 
-  Widget _inputFields(BuildContext context) {
+  _inputfield(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -99,9 +101,8 @@ class _RegistrationState extends State<Registration> {
             decoration: InputDecoration(
               hintText: 'Name',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
               prefixIcon: const Icon(Icons.person),
@@ -117,12 +118,11 @@ class _RegistrationState extends State<Registration> {
             decoration: InputDecoration(
               hintText: 'Username',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
-              prefixIcon: const Icon(Icons.person_outlined),
+              prefixIcon: const Icon(Icons.person_2_outlined),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
           ),
@@ -135,9 +135,8 @@ class _RegistrationState extends State<Registration> {
             decoration: InputDecoration(
               hintText: 'Email',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
               prefixIcon: const Icon(Icons.email),
@@ -153,9 +152,8 @@ class _RegistrationState extends State<Registration> {
             decoration: InputDecoration(
               hintText: 'Mobile',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
               prefixIcon: const Icon(Icons.mobile_friendly_outlined),
@@ -171,9 +169,8 @@ class _RegistrationState extends State<Registration> {
             decoration: InputDecoration(
               hintText: 'Password',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
               fillColor: Colors.white,
               filled: true,
               prefixIcon: const Icon(Icons.lock),
@@ -183,37 +180,6 @@ class _RegistrationState extends State<Registration> {
           ),
         ),
         const SizedBox(height: 50),
-      ],
-    );
-  }
-
-  Widget _register(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(
-          height: 530,
-        ),
-        Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 85),
-              child: Center(
-                child: Text("Already have an account?"),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Login()),
-                );
-              },
-              child: const Text("Login Here."),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
@@ -231,6 +197,9 @@ class _RegistrationState extends State<Registration> {
                 AuthController.instance.registerUser(
                   _emailController.text.trim(),
                   _passwordController.text.trim(),
+                  _nameController.text.trim(),
+                  _usernameController.text.trim(),
+                  _mobileController.text.trim(),
                 );
               }
             },
@@ -250,7 +219,34 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  Widget _description(BuildContext context) {
+  _login(context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          height: 530,
+        ),
+        Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 85),
+              child: Center(
+                child: Text("Already have an account?"),
+              ),
+            ),
+            TextButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Login()));
+                },
+                child: const Text("Login Here.")),
+          ],
+        )
+      ],
+    );
+  }
+
+  _description(context) {
     return Column(
       children: const [
         SizedBox(

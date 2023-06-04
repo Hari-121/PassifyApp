@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:get/get.dart';
-import 'package:passifyapp/controllers/profile_controller.dart';
 import 'package:passifyapp/login.dart';
 import 'package:passifyapp/controllers/auth_controller.dart';
 //import 'package:passifyapp/home.dart';
@@ -12,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(AuthController());
-  Get.put(ProfileController());
+  //Get.put(ProfileController());
   runApp(const MyApp());
 }
 

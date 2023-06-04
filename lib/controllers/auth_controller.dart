@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -36,15 +37,28 @@ class AuthController extends GetxController {
     });
   }
 
-  void registerUser(email, password) async {
+  void registerUser(String email, String password, String name, String username,
+      String mobile) async {
     isLoging = false;
     try {
-      //update();
-      await auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      getSuccessSnackBar("Successfully registred using ${_user.value!.email}");
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      User? user = userCredential.user;
+      if (user != null) {
+        // Store the user details in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'email': email,
+          'name': name,
+          'username': username,
+          'mobile': mobile,
+        });
+
+        getSuccessSnackBar("Successfully registered using ${user.email}");
+      }
     } on FirebaseAuthException catch (e) {
-      //define error
       getErrorSnackBar("Account Creation Failed", e);
     }
   }
@@ -58,6 +72,15 @@ class AuthController extends GetxController {
     } on FirebaseAuthException catch (e) {
       //define error
       getErrorSnackBar("Login Failed", e);
+    }
+  }
+
+  void forgorPassword(email) async {
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      getSuccessSnackBar("Reset mail sent successfully. Check mail!");
+    } on FirebaseAuthException catch (e) {
+      getErrorSnackBar("Error", e);
     }
   }
 

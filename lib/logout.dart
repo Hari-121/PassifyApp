@@ -1,200 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:passifyapp/controllers/auth_controller.dart';
 
+import 'Login.dart';
 import 'home.dart';
-//import 'Messages.dart';
 import 'Profile.dart';
-//import 'Search.dart';
 
-class Logout extends StatelessWidget {
+class Logout extends StatefulWidget {
   const Logout({Key? key}) : super(key: key);
+
+  @override
+  State<Logout> createState() => _LogoutState();
+}
+
+class _LogoutState extends State<Logout> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String name = '';
+  String avatarUrl = '';
+
+  final TextEditingController _nameController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot snapshot =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          name = data['name'] ?? 'Loading..';
+          _nameController.text = name;
+          avatarUrl = data['avatar'] ?? ''; // Get the avatar URL from Firestore
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade200,
-              Colors.purple.shade50,
-            ],
-          ),
-          image: const DecorationImage(
-            image: AssetImage('assets/images/bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 85),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Image.asset(
-                'assets/images/image1.png',
-                height: 110,
-                width: 110,
+        body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue.shade200,
+                  Colors.purple.shade50,
+                ],
               ),
             ),
-            const Text(
-              'ANANDU UNNIKRISHNAN',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            const Text(
-              'Student',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
-            ),
-            const Spacer(),
-            const Text(
-              'Do you want to logout?',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: ElevatedButton(
-                onPressed: () {
-                  AuthController.instance.signOut();
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  primary: Colors.black,
+            child: Stack(children: <Widget>[
+              Align(
+                  alignment: Alignment.center,
+                  child: Opacity(
+                    opacity: 0.7,
+                    child: Image.asset('assets/images/Pattern.png'),
+                  )),
+              Positioned(
+                top: 99,
+                left: 140,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: avatarUrl.isNotEmpty
+                      ? NetworkImage(
+                          avatarUrl) // Use the avatar URL from Firestore
+                      : AssetImage('assets/images/image1.png')
+                          as ImageProvider, // Fallback image
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
+              ),
+              Positioned(
+                  bottom: 0,
+                  //right: 0,
+                  child: Image.asset(
+                    'assets/images/logoutbg.png',
+                    height: 450,
+                    width: 400,
+                  )),
+              Positioned(
+                  top: 200,
+                  left: 140,
                   child: Text(
-                    'Yes',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Dashboard(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  primary: Colors.black,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
+                    name.toUpperCase(),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
+                  )),
+              const Positioned(
+                  top: 220,
+                  left: 168,
                   child: Text(
-                    'No',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                    'Student',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+                  )),
+              const Positioned(
+                  top: 350,
+                  left: 44,
+                  child: Text(
+                    'Do you want to logout?',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
+                  )),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 405, left: 30, right: 30),
+                    child: FloatingActionButton(
+                      heroTag: "btn1",
+                      onPressed: () {
+                        AuthController.instance.signOut();
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: Colors.black,
+                      child: const Text(
+                        'Yes',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w800),
+                      ),
                     ),
                   ),
-                ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 35, left: 30, right: 30),
+                    child: FloatingActionButton(
+                      heroTag: "btn2",
+                      onPressed: () {
+                        Navigator.pop(
+                          context,
+                        );
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: Colors.black,
+                      child: const Text(
+                        'No',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  )
+                ],
               ),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Dashboard(),
-                      ),
-                    );
-                  },
-                  child: Image.asset(
-                    'assets/Icons/Home.png',
-                    width: 28,
-                    height: 28,
-                  ),
-                ),
-                const SizedBox(width: 30),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Logout(),
-                      ),
-                    );
-                  },
-                  child: Image.asset(
-                    'assets/Icons/Logout.png',
-                    width: 28,
-                    height: 28,
-                  ),
-                ),
-                const SizedBox(width: 30),
-                InkWell(
-                  onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const Search()));
-                  },
-                  child: Image.asset(
-                    'assets/Icons/Search.png',
-                    width: 53,
-                    height: 53,
-                  ),
-                ),
-                const SizedBox(width: 30),
-                InkWell(
-                  onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const Messages()));
-                  },
-                  child: Image.asset(
-                    'assets/Icons/Messages.png',
-                    width: 28,
-                    height: 28,
-                  ),
-                ),
-                const SizedBox(width: 30),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Profile(),
-                      ),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.person_pin,
-                    size: 37,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
-    );
+            ])));
   }
 }
