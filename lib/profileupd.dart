@@ -37,7 +37,6 @@ class _ProfileState extends State<Profile_Upd> {
   bool _isEditingImage = false;
 
   @override
-  @override
   void initState() {
     super.initState();
     _fetchUserProfile();
@@ -53,7 +52,12 @@ class _ProfileState extends State<Profile_Upd> {
         setState(() {
           name = data['name'] ?? 'Loading..';
           _nameController.text = name;
-          avatarUrl = data['avatar'] ?? ''; // Get the avatar URL from Firestore
+
+          // Only update the avatarUrl if it's empty
+          if (avatarUrl.isEmpty) {
+            avatarUrl =
+                data['avatar'] ?? ''; // Get the avatar URL from Firestore
+          }
         });
         _deptController.text = data['department'] ?? 'Department';
         _emailController.text = data['email'] ?? '';
@@ -70,11 +74,12 @@ class _ProfileState extends State<Profile_Upd> {
       final String email = _emailController.text.trim();
       final String mobile = _mobileController.text.trim();
 
-      String avatarUrl = ''; // Initialize the avatar URL
-
+      // Only update the avatar URL if a new image is picked
+      String newAvatarUrl = '';
       if (_pickedImage != null) {
-        avatarUrl = await _uploadImage(
-            user); // Pass the user object to upload the avatar image
+        newAvatarUrl = await _uploadImage(user);
+      } else {
+        newAvatarUrl = avatarUrl; // Keep the existing avatar URL
       }
 
       await _firestore.collection('users').doc(user.uid).set(
@@ -83,10 +88,11 @@ class _ProfileState extends State<Profile_Upd> {
           'department': dept,
           'email': email,
           'mobile': mobile,
-          'avatar': avatarUrl, // Save the avatar URL in Firestore
+          'avatar': newAvatarUrl,
         },
         SetOptions(merge: true),
       );
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -110,10 +116,9 @@ class _ProfileState extends State<Profile_Upd> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedImage =
-        await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage = await picker.pickImage(source: source);
     if (pickedImage != null) {
       setState(() {
         _pickedImage = pickedImage;
@@ -204,7 +209,7 @@ class _ProfileState extends State<Profile_Upd> {
                 'assets/images/image25.png',
                 width: 450,
                 height: 550,
-                fit: BoxFit.fill,
+                // fit: BoxFit.fill,
               ),
             ),
             Align(
@@ -217,19 +222,47 @@ class _ProfileState extends State<Profile_Upd> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundImage: _pickedImage != null
+                        backgroundImage: (_pickedImage != null)
                             ? FileImage(File(_pickedImage!.path))
-                            : (avatarUrl.isNotEmpty
-                                ? NetworkImage(
-                                    avatarUrl) // Use the avatar URL from Firestore
+                            : ((avatarUrl.isNotEmpty)
+                                ? NetworkImage(avatarUrl)
                                 : AssetImage('assets/images/image1.png')
-                                    as ImageProvider), // Fallback image
+                                    as ImageProvider),
                       ),
                       Positioned(
                         bottom: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: _pickImage,
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: Icon(Icons.camera),
+                                        title: Text('Camera'),
+                                        onTap: () {
+                                          _pickImage(ImageSource.camera);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.image),
+                                        title: Text('Gallery'),
+                                        onTap: () {
+                                          _pickImage(ImageSource.gallery);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -382,7 +415,7 @@ class _ProfileState extends State<Profile_Upd> {
                                           controller: _mobileController,
                                           style: TextStyle(color: Colors.white),
                                           decoration: InputDecoration(
-                                            border: const OutlineInputBorder(
+                                            border: OutlineInputBorder(
                                               borderSide: BorderSide.none,
                                             ),
                                             hintText: 'Mobile',
@@ -414,27 +447,31 @@ class _ProfileState extends State<Profile_Upd> {
                           ),
                           Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: TextFormField(
-                              controller: _emailController,
-                              style: TextStyle(color: Colors.white),
-                              readOnly: true,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(
-                                  borderSide: BorderSide.none,
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.email,
+                                  color: Colors.white,
                                 ),
-                                hintText: 'Email',
-                                hintStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
-                                ),
-                                prefixIcon: const Padding(
-                                  padding: EdgeInsets.all(4.0),
-                                  child: Icon(
-                                    Icons.email_rounded,
-                                    color: Color.fromARGB(255, 255, 255, 255),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _emailController,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      hintText: 'Email',
+                                      hintStyle: TextStyle(
+                                        color: Colors.white.withOpacity(0.6),
+                                      ),
+                                    ),
+                                    readOnly: true,
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],

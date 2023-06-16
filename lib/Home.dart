@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:passifyapp/Logout.dart';
-import 'package:passifyapp/login.dart';
-import 'package:passifyapp/controllers/auth_controller.dart';
-import 'package:passifyapp/controllers/input_validators.dart';
 import 'package:passifyapp/profile.dart';
+
+import 'bottombar.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -47,10 +45,16 @@ class _DashboardState extends State<Dashboard> {
           .doc(currentUser.uid) // Fetch document using current user's UID
           .get();
 
-      // Update the welcome message with the retrieved username
-      String username = snapshot['username'];
+      // Get the full name from the snapshot
+      String fullName = snapshot['name'];
+
+      // Extract the first name from the full name until the first space is encountered
+      int spaceIndex = fullName.indexOf(' ');
+      String firstName =
+          spaceIndex != -1 ? fullName.substring(0, spaceIndex) : fullName;
+
       setState(() {
-        name = '$username';
+        name = firstName;
       });
     } catch (e) {
       print('Error fetching username: $e');
@@ -60,49 +64,49 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.blue.shade200,
-                Colors.purple.shade50,
+        body: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue.shade200,
+                  Colors.purple.shade50,
+                ],
+              ),
+            ),
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Image.asset('assets/images/Home1.png'),
+                ),
+                Align(
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: 0.15,
+                      child: Image.asset('assets/images/Pattern.png'),
+                    )),
+                _header(context),
+                _ticket(context),
+                _destination(context),
+                // _bottombar(context),
               ],
             ),
           ),
-          child: Stack(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.topCenter,
-                child: Image.asset('assets/images/Home1.png'),
-              ),
-              Align(
-                  alignment: Alignment.center,
-                  child: Opacity(
-                    opacity: 0.15,
-                    child: Image.asset('assets/images/Pattern.png'),
-                  )),
-              _header(context),
-              _ticket(context),
-              _destination(context),
-              _bottombar(context),
-            ],
-          ),
         ),
-      ),
-    );
+        bottomNavigationBar: MyBottomNavigationBar());
   }
 
   _header(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 70,
         ),
-        Center(
+        const Center(
           child: Padding(
             padding: EdgeInsets.only(left: 270),
             child: Text(
@@ -114,18 +118,18 @@ class _DashboardState extends State<Dashboard> {
         ),
         Center(
           child: Padding(
-            padding: EdgeInsets.only(left: 215),
+            padding: const EdgeInsets.only(left: 215),
             child: Text(
               name,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
               textAlign: TextAlign.right,
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 125,
         ),
-        Center(
+        const Center(
           child: Padding(
             padding: EdgeInsets.only(right: 179),
             child: Text(
@@ -135,10 +139,10 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 140,
         ),
-        Center(
+        const Center(
           child: Padding(
             padding: EdgeInsets.only(right: 212),
             child: Text(
@@ -179,14 +183,14 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 20),
                           child: Text(
                             'SJCET',
                             style: TextStyle(fontSize: 12),
                           ),
                         ),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Text(
                             'SJC',
@@ -194,7 +198,7 @@ class _DashboardState extends State<Dashboard> {
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 1),
                           child: Text(
                             'Passenger',
@@ -202,10 +206,10 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 5),
+                          padding: const EdgeInsets.only(bottom: 5),
                           child: Text(
                             name,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -273,14 +277,14 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 20),
                           child: Text(
                             'Vaikom',
                             style: TextStyle(fontSize: 12),
                           ),
                         ),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Text(
                             'VKM',
@@ -288,7 +292,7 @@ class _DashboardState extends State<Dashboard> {
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 1),
                           child: Text(
                             'Passenger',
@@ -296,10 +300,10 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 5),
+                          padding: const EdgeInsets.only(bottom: 5),
                           child: Text(
                             name,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -720,7 +724,7 @@ class _DashboardState extends State<Dashboard> {
                     splashColor:
                         Colors.blue, // Add the desired splash color here
                     child: Ink.image(
-                      image: AssetImage('assets/Icons/Home.png'),
+                      image: const AssetImage('assets/Icons/Home.png'),
                       width: 37,
                       height: 37,
                       child: InkWell(
@@ -741,13 +745,15 @@ class _DashboardState extends State<Dashboard> {
                   },
                   splashColor: Colors.blue, // Add the desired splash color here
                   child: Ink.image(
-                    image: AssetImage('assets/Icons/Logout.png'),
+                    image: const AssetImage('assets/Icons/Logout.png'),
                     width: 37,
                     height: 37,
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Logout()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Logout()));
                       },
                     ),
                   ),
@@ -764,7 +770,7 @@ class _DashboardState extends State<Dashboard> {
                   },
                   splashColor: Colors.blue, // Add the desired splash color here
                   child: Ink.image(
-                    image: AssetImage('assets/Icons/Search.png'),
+                    image: const AssetImage('assets/Icons/Search.png'),
                     width: 54,
                     height: 54,
                     child: InkWell(
@@ -784,7 +790,7 @@ class _DashboardState extends State<Dashboard> {
                   },
                   splashColor: Colors.blue, // Add the desired splash color here
                   child: Ink.image(
-                    image: AssetImage('assets/Icons/navticket.png'),
+                    image: const AssetImage('assets/Icons/navticket.png'),
                     width: 37,
                     height: 37,
                     child: InkWell(
@@ -805,7 +811,7 @@ class _DashboardState extends State<Dashboard> {
                   splashColor:
                       Colors.black, // Add the desired splash color here
                   child: Ink.image(
-                    image: AssetImage('assets/Icons/Avatar.png'),
+                    image: const AssetImage('assets/Icons/Avatar.png'),
                     width: 37,
                     height: 37,
                     child: InkWell(

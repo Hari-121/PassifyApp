@@ -11,6 +11,8 @@ import 'Home.dart';
 import 'buspass.dart';
 import 'profileupd.dart';
 
+import 'bottombar.dart';
+
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
@@ -62,278 +64,188 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade200,
-              Colors.purple.shade50,
-            ],
-          ),
-          image: const DecorationImage(
-            image: AssetImage('assets/images/bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Image.asset('assets/images/Register.png'),
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.blue.shade200,
+                Colors.purple.shade50,
+              ],
             ),
-            Positioned(
-              top: 50,
-              right: 40,
-              child: InkWell(
-                onTap: () {
-                  changeImageColor;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Profile_Upd()));
-                },
-                child: Image.asset(
-                  'assets/Icons/edit.png',
-                  color: imageColor,
-                  width: 25,
-                  height: 25,
+            image: const DecorationImage(
+              image: AssetImage('assets/images/bg.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: Image.asset('assets/images/Register.png'),
+              ),
+              Positioned(
+                top: 50,
+                right: 40,
+                child: InkWell(
+                  onTap: () {
+                    changeImageColor;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Profile_Upd()));
+                  },
+                  child: Image.asset(
+                    'assets/Icons/edit.png',
+                    color: imageColor,
+                    width: 25,
+                    height: 25,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Image.asset(
-                'assets/images/image25.png',
-                width: 450,
-                height: 550,
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Image.asset(
+                  'assets/images/image25.png',
+                  width: 450,
+                  height: 550,
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 70),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: avatarUrl.isNotEmpty
-                        ? NetworkImage(
-                            avatarUrl) // Use the avatar URL from Firestore
-                        : AssetImage('assets/images/image1.png')
-                            as ImageProvider, // Fallback image
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    name.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 70),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: avatarUrl.isNotEmpty
+                          ? NetworkImage(
+                              avatarUrl) // Use the avatar URL from Firestore
+                          : AssetImage('assets/images/image1.png')
+                              as ImageProvider, // Fallback image
                     ),
-                  ),
-                  Text(
-                    'Student',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey.shade800,
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  Container(
-                    width: 300,
-                    height: 220,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.person,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _nameController.text,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 30),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.business,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _deptController.text,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 30),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.phone,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _mobileController.text,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 30),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.email_rounded,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _emailController.text,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                    const SizedBox(height: 10),
+                    Text(
+                      name.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 180, left: 40),
-                              child: InkWell(
-                                onTap: () {
-                                  changeImageColor;
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const Dashboard()));
-                                },
-                                child: Image.asset(
-                                  'assets/Icons/Home.png',
-                                  color: imageColor,
-                                  width: 28,
-                                  height: 28,
+                    Text(
+                      'Student',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 60),
+                    Container(
+                      width: 300,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  color: Colors.white,
                                 ),
-                              ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _nameController.text,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 180, left: 30),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Logout()));
-                              },
-                              child: Image.asset(
-                                'assets/Icons/Logout.png',
-                                color: Colors.black54,
-                                width: 28,
-                                height: 28,
-                              ),
+                            const SizedBox(height: 30),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.business,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _deptController.text,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 180, left: 35),
-                            child: InkWell(
-                              onTap: () {},
-                              child: Image.asset(
-                                'assets/Icons/Search.png',
-                                color: Colors.black54,
-                                width: 53,
-                                height: 53,
-                              ),
+                            const SizedBox(height: 30),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.phone,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _mobileController.text,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 180, left: 40),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Buspass()));
-                              },
-                              child: Image.asset(
-                                'assets/Icons/Messages.png',
-                                color: Colors.black54,
-                                width: 28,
-                                height: 28,
-                              ),
+                            const SizedBox(height: 30),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.email_rounded,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _emailController.text,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 180, left: 45),
-                            child: InkWell(
-                              onTap: () {
-                                changeImageColor;
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Profile()));
-                              },
-                              child: Image.asset(
-                                'assets/Icons/Avatar.png',
-                                //color: Colors.black54,
-                                width: 28,
-                                height: 28,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: MyBottomNavigationBar(),
       ),
     );
   }

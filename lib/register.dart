@@ -108,6 +108,15 @@ class _RegistrationState extends State<Registration> {
               prefixIcon: const Icon(Icons.person),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                _nameController.text =
+                    value[0].toUpperCase() + value.substring(1);
+                _nameController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: _nameController.text.length),
+                );
+              }
+            },
           ),
         ),
         const SizedBox(height: 20),
@@ -125,6 +134,15 @@ class _RegistrationState extends State<Registration> {
               prefixIcon: const Icon(Icons.person_2_outlined),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                _usernameController.text =
+                    value[0].toUpperCase() + value.substring(1);
+                _usernameController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: _usernameController.text.length),
+                );
+              }
+            },
           ),
         ),
         const SizedBox(height: 20),
@@ -159,6 +177,14 @@ class _RegistrationState extends State<Registration> {
               prefixIcon: const Icon(Icons.mobile_friendly_outlined),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
+            onChanged: (value) {
+              if (value.length > 10) {
+                _mobileController.text = value.substring(0, 10);
+                _mobileController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: _mobileController.text.length),
+                );
+              }
+            },
           ),
         ),
         const SizedBox(height: 20),

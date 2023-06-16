@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:passifyapp/admin.dart';
 import 'package:passifyapp/controllers/auth_controller.dart';
 import 'package:passifyapp/register.dart';
 import 'package:passifyapp/home.dart';
@@ -16,6 +17,29 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final String adminDefaultId = 'admin'; // Set your default admin ID
+  final String adminDefaultPassword =
+      'password'; // Set your default admin password
+
+  void _login() {
+    final String enteredEmail = _emailController.text.trim();
+    final String enteredPassword = _passwordController.text.trim();
+
+    if (enteredEmail == adminDefaultId &&
+        enteredPassword == adminDefaultPassword) {
+      // Admin login
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdminPanel(),
+        ),
+      );
+    } else {
+      // Regular user login
+      AuthController.instance.login(enteredEmail, enteredPassword);
+      // Additional logic for regular user login
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,22 +140,23 @@ class _LoginState extends State<Login> {
           ),
         ),
         Padding(
-            padding: const EdgeInsets.only(left: 168),
-            child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Forget_Password()));
-                },
-                child: const Text("Forgot Password ?"))),
+          padding: const EdgeInsets.only(left: 168),
+          child: TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Forget_Password(),
+                ),
+              );
+            },
+            child: const Text("Forgot Password ?"),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
-            onPressed: () {
-              AuthController.instance.login(_emailController.text.trim(),
-                  _passwordController.text.trim());
-            },
+            onPressed: _login,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -164,13 +189,16 @@ class _LoginState extends State<Login> {
               ),
             ),
             TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Registration()));
-                },
-                child: const Text("Register Here.")),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Registration(),
+                  ),
+                );
+              },
+              child: const Text("Register Here."),
+            ),
           ],
         )
       ],
